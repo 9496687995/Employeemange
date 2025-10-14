@@ -102,8 +102,8 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
         className="fixed inset-0 bg-black bg-opacity-30 z-40"
         onClick={onClose}
       />
-      <div className="fixed right-0 top-0 h-full w-full sm:w-96 bg-white shadow-2xl z-50 flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-cyan-400 text-white">
+      <div className="fixed right-0 top-0 h-screen w-full sm:w-96 bg-white shadow-2xl z-50 flex flex-col max-h-screen overflow-hidden">
+        <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-cyan-400 text-white">
           <div className="flex items-center">
             <Bell className="h-5 w-5 mr-2" />
             <h2 className="text-lg font-semibold">Notifications</h2>
@@ -116,7 +116,7 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
           </button>
         </div>
 
-        <div className="p-4 border-b border-gray-200 bg-gray-50">
+        <div className="flex-shrink-0 p-4 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between mb-3">
             <div className="flex space-x-2">
               <button
@@ -151,7 +151,7 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto min-h-0">
           {loading ? (
             <div className="flex items-center justify-center h-32">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -162,7 +162,7 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
               <p className="text-sm">No notifications</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-gray-200 pb-4">
               {filteredNotifications.map((notification) => (
                 <div
                   key={notification.id}
