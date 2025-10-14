@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Bell, X, CheckCircle, MapPin, Calendar, Trash2 } from 'lucide-react';
 import { notificationService } from '../services/notificationService';
 import { Notification } from '../types/notification';
@@ -96,14 +97,14 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
 
   if (!isOpen) return null;
 
-  return (
+  const panelContent = (
     <div className="fixed inset-0 z-[9999]">
       <div
         className="absolute inset-0 bg-black bg-opacity-30"
         onClick={onClose}
       />
 
-      <div className="absolute right-0 top-0 h-full w-full sm:w-96 bg-white shadow-2xl flex flex-col">
+      <div className="absolute right-0 top-0 h-full w-full sm:w-96 bg-white shadow-2xl flex flex-col overflow-hidden">
         <div className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white p-4 flex items-center justify-between">
           <div className="flex items-center">
             <Bell className="h-5 w-5 mr-2" />
@@ -152,7 +153,7 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto" style={{ height: 'calc(100vh - 140px)' }}>
+        <div className="flex-1 overflow-y-auto scrollbar-thin">
           {loading ? (
             <div className="flex items-center justify-center h-32">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -214,6 +215,8 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
       </div>
     </div>
   );
+
+  return createPortal(panelContent, document.body);
 };
 
 export default NotificationsPanel;
