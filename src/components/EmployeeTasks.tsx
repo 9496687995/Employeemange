@@ -3,6 +3,7 @@ import { CheckCircle, Clock, Calendar, AlertCircle, TrendingUp } from 'lucide-re
 import { useAuth } from '../contexts/AuthContext';
 import { taskService } from '../services/taskService';
 import { Task } from '../types/task';
+import { notificationService } from '../services/notificationService';
 
 const EmployeeTasks: React.FC = () => {
   const { user } = useAuth();
@@ -43,6 +44,27 @@ const EmployeeTasks: React.FC = () => {
     try {
       const newStatus = task.status === 'pending' ? 'completed' : 'pending';
       await taskService.updateTaskStatus(task.id, newStatus);
+
+      if (newStatus === 'completed' && user) {
+        try {
+          await notificationService.createNotification({
+            type: 'task_completed',
+            title: 'Task Completed',
+            message: `${user.name} has completed the task: "${task.title}"`,
+            employee_id: user.id,
+            employee_name: user.name,
+            related_id: task.id,
+            metadata: {
+              task_title: task.title,
+              task_priority: task.priority,
+              due_date: task.due_date
+            }
+          });
+        } catch (notifError) {
+          console.error('Failed to create notification:', notifError);
+        }
+      }
+
       loadTasks();
     } catch (error) {
       console.error('Error updating task status:', error);
