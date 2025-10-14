@@ -1,6 +1,7 @@
 import { Users, Building2, DollarSign, Calendar, Check, Clock, X, TrendingUp, Filter } from 'lucide-react';
 import { useEmployee } from '../contexts/EmployeeContext';
 import LeaveAnalytics from '../components/LeaveAnalytics';
+import TaskManagement from '../components/TaskManagement';
 
 const Dashboard = () => {
   const { employees, departments, leaves } = useEmployee();
@@ -118,6 +119,11 @@ const Dashboard = () => {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Task Management */}
+      <div className="rounded-2xl bg-white/50 backdrop-blur-lg shadow-lg border border-gray-200 p-6 mt-10 hover:bg-white/70 transition-all">
+        <TaskManagement />
       </div>
 
       {/* Leave Analytics */}

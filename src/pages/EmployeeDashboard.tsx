@@ -2,6 +2,7 @@ import React from 'react';
 import { User, Calendar, DollarSign, Clock, Check, X, Building2, MapPin, Navigation, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useEmployee } from '../contexts/EmployeeContext';
+import EmployeeTasks from '../components/EmployeeTasks';
 
 export default function EmployeeDashboard() {
   const { user } = useAuth();
@@ -564,6 +565,11 @@ export default function EmployeeDashboard() {
           </div>
         </div>
       )}
+
+      {/* Employee Tasks */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <EmployeeTasks />
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
