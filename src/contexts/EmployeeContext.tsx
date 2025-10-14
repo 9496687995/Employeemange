@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import apiService from '../services/api';
+import { notificationService } from '../services/notificationService';
 
 export interface Employee {
   id: string;
@@ -171,6 +172,26 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       const newLeave = await apiService.createLeave(leaveData);
       setLeaves(prev => [...prev, newLeave]);
+
+      try {
+        await notificationService.createNotification({
+          type: 'leave_applied',
+          title: 'New Leave Application',
+          message: `${leaveData.employeeName} has applied for ${leaveData.type} leave from ${new Date(leaveData.startDate).toLocaleDateString()} to ${new Date(leaveData.endDate).toLocaleDateString()} (${leaveData.days} days)`,
+          employee_id: leaveData.employeeId,
+          employee_name: leaveData.employeeName,
+          related_id: newLeave.id,
+          metadata: {
+            leave_type: leaveData.type,
+            start_date: leaveData.startDate,
+            end_date: leaveData.endDate,
+            days: leaveData.days,
+            reason: leaveData.reason
+          }
+        });
+      } catch (notifError) {
+        console.error('Failed to create notification:', notifError);
+      }
     } catch (error) {
       console.error('Failed to add leave request:', error);
       throw error;

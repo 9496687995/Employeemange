@@ -5,6 +5,7 @@ import { useEmployee } from '../contexts/EmployeeContext';
 import { taskService } from '../services/taskService';
 import { Task } from '../types/task';
 import Modal from './Modal';
+import { notificationService } from '../services/notificationService';
 
 const TaskManagement: React.FC = () => {
   const { user } = useAuth();
@@ -117,6 +118,28 @@ const TaskManagement: React.FC = () => {
     try {
       const newStatus = task.status === 'pending' ? 'completed' : 'pending';
       await taskService.updateTaskStatus(task.id, newStatus);
+
+      if (newStatus === 'completed') {
+        const employeeName = getEmployeeName(task.assigned_to);
+        try {
+          await notificationService.createNotification({
+            type: 'task_completed',
+            title: 'Task Completed',
+            message: `${employeeName} has completed the task: "${task.title}"`,
+            employee_id: task.assigned_to,
+            employee_name: employeeName,
+            related_id: task.id,
+            metadata: {
+              task_title: task.title,
+              task_priority: task.priority,
+              due_date: task.due_date
+            }
+          });
+        } catch (notifError) {
+          console.error('Failed to create notification:', notifError);
+        }
+      }
+
       loadTasks();
     } catch (error) {
       console.error('Error updating task status:', error);

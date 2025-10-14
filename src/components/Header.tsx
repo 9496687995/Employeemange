@@ -1,13 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bell, Search } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useEmployee } from '../contexts/EmployeeContext';
+import NotificationsPanel from './NotificationsPanel';
+import { notificationService } from '../services/notificationService';
 
 const Header = () => {
   const { user } = useAuth();
   const { employees } = useEmployee();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const currentEmployee = employees.find((emp: any) => emp.id === user?.id);
+
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      loadUnreadCount();
+      const unsubscribe = notificationService.subscribeToNotifications(() => {
+        loadUnreadCount();
+      });
+      return () => unsubscribe();
+    }
+  }, [user]);
+
+  const loadUnreadCount = async () => {
+    try {
+      const count = await notificationService.getUnreadCount();
+      setUnreadCount(count);
+    } catch (error) {
+      console.error('Failed to load unread count:', error);
+    }
+  };
 
   return (
     <header
@@ -33,12 +56,20 @@ const Header = () => {
 
         {/* 🔔 Notification + Profile */}
         <div className="flex items-center space-x-6 ml-6">
-          <button
-            className="p-2 rounded-lg bg-white/20 hover:bg-white/30 
-                       text-white hover:text-yellow-200 shadow-md transition-all"
-          >
-            <Bell className="h-5 w-5" />
-          </button>
+          {user?.role === 'admin' && (
+            <button
+              onClick={() => setShowNotifications(true)}
+              className="relative p-2 rounded-lg bg-white/20 hover:bg-white/30
+                         text-white hover:text-yellow-200 shadow-md transition-all"
+            >
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* 🧑‍💼 User Info */}
           <div className="flex items-center space-x-4 border-l border-white/30 pl-4">
@@ -71,6 +102,14 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      <NotificationsPanel
+        isOpen={showNotifications}
+        onClose={() => {
+          setShowNotifications(false);
+          loadUnreadCount();
+        }}
+      />
     </header>
   );
 };

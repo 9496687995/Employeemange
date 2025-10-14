@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, Users, CheckCircle, XCircle, AlertTriangle, Navigation, Plus, CreditCard as Edit2, Trash2 } from 'lucide-react';
 import { useEmployee } from '../contexts/EmployeeContext';
 import { useAuth } from '../contexts/AuthContext';
+import { notificationService } from '../services/notificationService';
 
 interface LocationRecord {
   id: string;
@@ -292,6 +293,26 @@ const LocationAttendance = () => {
         alert(`✅ Location verified! You are within ${office?.name} (${distance.toFixed(0)}m away)`);
       } else {
         alert(`❌ You are outside office premises. Distance to ${office?.name}: ${distance.toFixed(0)}m`);
+
+        try {
+          await notificationService.createNotification({
+            type: 'location_alert',
+            title: 'Employee Outside Office',
+            message: `${user?.name} is outside office premises. Distance to ${office?.name}: ${distance.toFixed(0)}m`,
+            employee_id: user?.id || '',
+            employee_name: user?.name || '',
+            related_id: newRecord.id,
+            metadata: {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              distance: distance.toFixed(0),
+              office: office?.name,
+              accuracy: position.coords.accuracy
+            }
+          });
+        } catch (error) {
+          console.error('Failed to create notification:', error);
+        }
       }
 
     } catch (error) {
