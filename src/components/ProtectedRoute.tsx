@@ -4,19 +4,16 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'admin' | 'employee';
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
   }
@@ -25,8 +22,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole 
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && user.role !== requiredRole) {
-    return <Navigate to={user.role === 'admin' ? '/admin' : '/employee'} replace />;
+  if (user.role === 'employee') {
+    const adminOnlyPaths = ['/employees', '/departments', '/attendance', '/location-attendance'];
+    if (adminOnlyPaths.includes(location.pathname)) {
+      return <Navigate to="/employee-dashboard" replace />;
+    }
+    if (location.pathname === '/dashboard') {
+      return <Navigate to="/employee-dashboard" replace />;
+    }
+  }
+
+  if (user.role === 'admin' && location.pathname === '/employee-dashboard') {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navigate, Link } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { Building2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -12,7 +12,7 @@ const Login = () => {
   const [error, setError] = useState('');
 
   if (user) {
-    return <Navigate to={user.role === 'admin' ? '/admin' : '/employee'} replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,18 +31,18 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-slate-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
             <Building2 className="h-12 w-12 text-blue-400" />
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-white">Task Manager</h2>
+          <h2 className="mt-6 text-3xl font-bold text-white">HRFlow</h2>
           <p className="mt-2 text-sm text-slate-300">
             Sign in to your account
           </p>
         </div>
-        
+
         <div className="bg-slate-800/90 backdrop-blur-sm py-8 px-4 shadow-xl rounded-xl border border-slate-700/50 sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
@@ -50,7 +50,7 @@ const Login = () => {
                 {error}
               </div>
             )}
-            
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-200">
                 Email address
@@ -107,22 +107,24 @@ const Login = () => {
                 {loading ? 'Signing in...' : 'Sign in'}
               </button>
             </div>
-
-            <div className="text-center">
-              <p className="text-sm text-slate-300">
-                Don't have an account?{' '}
-                <Link to="/register" className="font-medium text-blue-400 hover:text-blue-300 transition-colors">
-                  Sign up
-                </Link>
-              </p>
-            </div>
           </form>
 
           <div className="mt-6 border-t border-slate-600/50 pt-6">
             <div className="bg-blue-900/30 backdrop-blur-sm border border-blue-700/50 rounded-lg p-4">
-              <p className="text-sm text-blue-300 font-medium mb-2">Getting Started:</p>
+              <p className="text-sm text-blue-300 font-medium mb-2">Demo Credentials:</p>
+              <p className="text-sm text-blue-200 mb-1">
+                <strong>Admin:</strong>
+              </p>
+              <p className="text-sm text-blue-200 mb-2">
+                Email: <code className="bg-slate-700/80 px-2 py-1 rounded text-blue-300">admin@company.com</code>
+                Password: <code className="bg-slate-700/80 px-2 py-1 rounded text-blue-300">admin123</code>
+              </p>
+              <p className="text-sm text-blue-200 mb-1">
+                <strong>Employee:</strong>
+              </p>
               <p className="text-sm text-blue-200">
-                Create an account by clicking the 'Sign up' link above. Choose your role (Admin or Employee) during registration.
+                Email: Any employee email (e.g., <code className="bg-slate-700/80 px-2 py-1 rounded text-blue-300">john.smith@company.com</code>)
+                Password: <code className="bg-slate-700/80 px-2 py-1 rounded text-blue-300">employee123</code>
               </p>
             </div>
           </div>
