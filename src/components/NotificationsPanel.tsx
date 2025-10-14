@@ -97,13 +97,14 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
   if (!isOpen) return null;
 
   return (
-    <>
+    <div className="fixed inset-0 z-[9999]">
       <div
-        className="fixed inset-0 bg-black bg-opacity-30 z-[9998]"
+        className="absolute inset-0 bg-black bg-opacity-30"
         onClick={onClose}
       />
-      <div className="fixed right-0 top-0 bottom-0 w-full sm:w-96 bg-white shadow-2xl z-[9999] flex flex-col">
-        <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-cyan-400 text-white">
+
+      <div className="absolute right-0 top-0 h-full w-full sm:w-96 bg-white shadow-2xl flex flex-col">
+        <div className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white p-4 flex items-center justify-between">
           <div className="flex items-center">
             <Bell className="h-5 w-5 mr-2" />
             <h2 className="text-lg font-semibold">Notifications</h2>
@@ -116,7 +117,7 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
           </button>
         </div>
 
-        <div className="flex-shrink-0 p-4 border-b border-gray-200 bg-gray-50">
+        <div className="bg-gray-50 border-b border-gray-200 p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex space-x-2">
               <button
@@ -151,7 +152,7 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto" style={{ height: 'calc(100vh - 140px)' }}>
           {loading ? (
             <div className="flex items-center justify-center h-32">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -162,11 +163,11 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
               <p className="text-sm">No notifications</p>
             </div>
           ) : (
-            <div className="pb-6">
+            <>
               {filteredNotifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-4 hover:bg-gray-50 transition-colors ${
+                  className={`p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors ${
                     !notification.is_read ? 'bg-blue-50/30' : ''
                   }`}
                 >
@@ -181,7 +182,7 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
                         </p>
                         <button
                           onClick={() => handleDelete(notification.id)}
-                          className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                          className="p-1 text-gray-400 hover:text-red-600 transition-colors flex-shrink-0"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -206,11 +207,12 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
                   </div>
                 </div>
               ))}
-            </div>
+              <div className="h-20"></div>
+            </>
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
