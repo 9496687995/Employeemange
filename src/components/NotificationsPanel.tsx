@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Bell, X, CheckCircle, MapPin, Calendar, Trash2 } from 'lucide-react';
+import { Bell, X, CheckCircle, MapPin, Calendar, Trash2, ClipboardList, CalendarCheck } from 'lucide-react';
 import { notificationService } from '../services/notificationService';
 import { Notification } from '../types/notification';
 import { useAuth } from '../contexts/AuthContext';
@@ -79,8 +79,12 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
         return <MapPin className="h-5 w-5 text-red-600" />;
       case 'task_completed':
         return <CheckCircle className="h-5 w-5 text-green-600" />;
+      case 'task_assigned':
+        return <ClipboardList className="h-5 w-5 text-purple-600" />;
       case 'leave_applied':
         return <Calendar className="h-5 w-5 text-blue-600" />;
+      case 'leave_updated':
+        return <CalendarCheck className="h-5 w-5 text-orange-600" />;
       default:
         return <Bell className="h-5 w-5 text-gray-600" />;
     }
@@ -92,8 +96,12 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
         return 'bg-red-50 border-red-200';
       case 'task_completed':
         return 'bg-green-50 border-green-200';
+      case 'task_assigned':
+        return 'bg-purple-50 border-purple-200';
       case 'leave_applied':
         return 'bg-blue-50 border-blue-200';
+      case 'leave_updated':
+        return 'bg-orange-50 border-orange-200';
       default:
         return 'bg-gray-50 border-gray-200';
     }

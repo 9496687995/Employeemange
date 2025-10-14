@@ -1,4 +1,4 @@
-export type NotificationType = 'location_alert' | 'task_completed' | 'leave_applied';
+export type NotificationType = 'location_alert' | 'task_completed' | 'leave_applied' | 'task_assigned' | 'leave_updated';
 
 export interface Notification {
   id: string;

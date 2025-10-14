@@ -1,11 +1,13 @@
 import { supabase } from '../lib/supabase';
 import { Task } from '../types/task';
+import { notificationService } from './notificationService';
 
 export const taskService = {
   async createTask(taskData: {
     title: string;
     description: string;
     assigned_to: string;
+    assigned_to_name: string;
     created_by: string;
     priority: 'low' | 'medium' | 'high';
     due_date?: string;
@@ -17,6 +19,22 @@ export const taskService = {
       .single();
 
     if (error) throw error;
+
+    // Create notification for the employee
+    await notificationService.createNotification({
+      type: 'task_assigned',
+      title: 'New Task Assigned',
+      message: `You have been assigned a new ${taskData.priority} priority task: ${taskData.title}`,
+      employee_id: taskData.assigned_to,
+      employee_name: taskData.assigned_to_name,
+      related_id: data.id,
+      metadata: {
+        task_title: taskData.title,
+        priority: taskData.priority,
+        due_date: taskData.due_date
+      }
+    });
+
     return data;
   },
 

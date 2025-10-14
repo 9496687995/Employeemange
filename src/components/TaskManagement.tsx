@@ -64,10 +64,12 @@ const TaskManagement: React.FC = () => {
           due_date: formData.due_date || null
         });
       } else {
+        const assignedEmployee = employees.find(e => e.id === formData.assigned_to);
         await taskService.createTask({
           title: formData.title,
           description: formData.description,
           assigned_to: formData.assigned_to,
+          assigned_to_name: assignedEmployee?.name || 'Unknown',
           created_by: user.id,
           priority: formData.priority,
           due_date: formData.due_date || undefined

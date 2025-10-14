@@ -3,6 +3,7 @@ import { Plus, Calendar, Check, X, Clock } from 'lucide-react';
 import { useEmployee } from '../contexts/EmployeeContext';
 import { useAuth } from '../contexts/AuthContext';
 import Modal from '../components/Modal';
+import { notificationService } from '../services/notificationService';
 
 const Leave = () => {
   const { leaves, employees, addLeaveRequest, updateLeaveStatus } = useEmployee();
@@ -70,10 +71,31 @@ const Leave = () => {
     setIsModalOpen(false);
   };
 
-  const handleStatusUpdate = (id: string, status: 'approved' | 'rejected') => {
+  const handleStatusUpdate = async (id: string, status: 'approved' | 'rejected') => {
     try {
       updateLeaveStatus(id, status);
-      // Success - the UI will update automatically through context
+
+      // Find the leave request to get employee details
+      const leave = leaves.find(l => l.id === id);
+      if (leave) {
+        // Create notification for the employee
+        await notificationService.createNotification({
+          type: 'leave_updated',
+          title: `Leave ${status === 'approved' ? 'Approved' : 'Rejected'}`,
+          message: `Your ${leave.type} leave request from ${new Date(leave.startDate).toLocaleDateString()} to ${new Date(leave.endDate).toLocaleDateString()} has been ${status}.`,
+          employee_id: leave.employeeId,
+          employee_name: leave.employeeName,
+          related_id: id,
+          metadata: {
+            leave_type: leave.type,
+            start_date: leave.startDate,
+            end_date: leave.endDate,
+            days: leave.days,
+            status: status,
+            reason: leave.reason
+          }
+        });
+      }
     } catch (error: unknown) {
       console.error('Error updating leave status:', error);
       alert('Failed to update leave status. Please try again.');
