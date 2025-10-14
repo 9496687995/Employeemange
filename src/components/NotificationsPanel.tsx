@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Bell, X, CheckCircle, MapPin, Calendar, Trash2 } from 'lucide-react';
 import { notificationService } from '../services/notificationService';
 import { Notification } from '../types/notification';
+import { useAuth } from '../contexts/AuthContext';
 
 interface NotificationsPanelProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface NotificationsPanelProps {
 }
 
 const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose }) => {
+  const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
@@ -18,16 +20,22 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose
     if (isOpen) {
       loadNotifications();
       const unsubscribe = notificationService.subscribeToNotifications((newNotification) => {
-        setNotifications(prev => [newNotification, ...prev]);
+        // Only add notification if it's relevant to current user
+        const userId = user?.role === 'employee' ? user?.id : undefined;
+        if (!userId || newNotification.employee_id === userId) {
+          setNotifications(prev => [newNotification, ...prev]);
+        }
       });
       return () => unsubscribe();
     }
-  }, [isOpen]);
+  }, [isOpen, user]);
 
   const loadNotifications = async () => {
     try {
       setLoading(true);
-      const data = await notificationService.getNotifications();
+      // For employees, show notifications about them. For admin, show all notifications
+      const userId = user?.role === 'employee' ? user?.id : undefined;
+      const data = await notificationService.getNotifications(50, userId);
       setNotifications(data);
     } catch (error) {
       console.error('Failed to load notifications:', error);

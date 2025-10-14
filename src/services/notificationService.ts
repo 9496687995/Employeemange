@@ -13,33 +13,52 @@ export const notificationService = {
     return notification;
   },
 
-  async getNotifications(limit = 50): Promise<Notification[]> {
-    const { data, error } = await supabase
+  async getNotifications(limit = 50, userId?: string): Promise<Notification[]> {
+    let query = supabase
       .from('notifications')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(limit);
 
+    // If userId is provided, filter notifications for that employee
+    if (userId) {
+      query = query.eq('employee_id', userId);
+    }
+
+    const { data, error } = await query;
+
     if (error) throw error;
     return data || [];
   },
 
-  async getUnreadNotifications(): Promise<Notification[]> {
-    const { data, error } = await supabase
+  async getUnreadNotifications(userId?: string): Promise<Notification[]> {
+    let query = supabase
       .from('notifications')
       .select('*')
       .eq('is_read', false)
       .order('created_at', { ascending: false });
 
+    if (userId) {
+      query = query.eq('employee_id', userId);
+    }
+
+    const { data, error } = await query;
+
     if (error) throw error;
     return data || [];
   },
 
-  async getUnreadCount(): Promise<number> {
-    const { count, error } = await supabase
+  async getUnreadCount(userId?: string): Promise<number> {
+    let query = supabase
       .from('notifications')
       .select('*', { count: 'exact', head: true })
       .eq('is_read', false);
+
+    if (userId) {
+      query = query.eq('employee_id', userId);
+    }
+
+    const { count, error } = await query;
 
     if (error) throw error;
     return count || 0;

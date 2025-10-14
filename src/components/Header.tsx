@@ -14,18 +14,18 @@ const Header = () => {
   const currentEmployee = employees.find((emp: any) => emp.id === user?.id);
 
   useEffect(() => {
-    if (user?.role === 'admin') {
+    loadUnreadCount();
+    const unsubscribe = notificationService.subscribeToNotifications(() => {
       loadUnreadCount();
-      const unsubscribe = notificationService.subscribeToNotifications(() => {
-        loadUnreadCount();
-      });
-      return () => unsubscribe();
-    }
+    });
+    return () => unsubscribe();
   }, [user]);
 
   const loadUnreadCount = async () => {
     try {
-      const count = await notificationService.getUnreadCount();
+      // For employees, show notifications about them. For admin, show all notifications
+      const userId = user?.role === 'employee' ? user?.id : undefined;
+      const count = await notificationService.getUnreadCount(userId);
       setUnreadCount(count);
     } catch (error) {
       console.error('Failed to load unread count:', error);
@@ -56,20 +56,18 @@ const Header = () => {
 
         {/* 🔔 Notification + Profile */}
         <div className="flex items-center space-x-6 ml-6">
-          {user?.role === 'admin' && (
-            <button
-              onClick={() => setShowNotifications(true)}
-              className="relative p-2 rounded-lg bg-white/20 hover:bg-white/30
-                         text-white hover:text-yellow-200 shadow-md transition-all"
-            >
-              <Bell className="h-5 w-5" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              )}
-            </button>
-          )}
+          <button
+            onClick={() => setShowNotifications(true)}
+            className="relative p-2 rounded-lg bg-white/20 hover:bg-white/30
+                       text-white hover:text-yellow-200 shadow-md transition-all"
+          >
+            <Bell className="h-5 w-5" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </button>
 
           {/* 🧑‍💼 User Info */}
           <div className="flex items-center space-x-4 border-l border-white/30 pl-4">
