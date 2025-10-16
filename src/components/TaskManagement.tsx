@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, CheckCircle, Clock, Calendar, AlertCircle, Filter, MoreVertical } from 'lucide-react';
+import { Plus, Edit2, Trash2, CheckCircle, Clock, Calendar, AlertCircle, Activity } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useEmployee } from '../contexts/EmployeeContext';
 import { taskService } from '../services/taskService';
@@ -168,10 +168,10 @@ const TaskManagement: React.FC = () => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' };
-      case 'medium': return { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' };
-      case 'low': return { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' };
-      default: return { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
+      case 'high': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'medium': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
+      case 'low': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
   };
 
@@ -181,7 +181,7 @@ const TaskManagement: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
       </div>
     );
   }
@@ -190,206 +190,194 @@ const TaskManagement: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Task Management</h2>
-          <p className="text-gray-500 mt-1 text-sm">Assign and track tasks for employees</p>
+          <h2 className="text-xl font-bold text-white font-mono">TASK MANAGEMENT</h2>
+          <p className="text-slate-400 mt-1 text-sm font-mono">Assign and track employee tasks</p>
         </div>
         <button
           onClick={openCreateModal}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg transition-colors font-medium"
+          className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-2.5 rounded-lg transition-colors font-medium font-mono text-sm uppercase tracking-wide"
         >
-          <Plus size={20} />
+          <Plus size={18} />
           Create Task
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+        <div className="bg-slate-800/50 rounded-lg p-5 border border-slate-700/50">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Calendar className="text-blue-600" size={20} />
+            <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+              <Calendar className="text-blue-400" size={20} />
             </div>
-            <span className="text-sm font-medium text-gray-600">Total Tasks</span>
+            <span className="text-sm font-medium text-slate-400 font-mono uppercase">Total</span>
           </div>
-          <p className="text-3xl font-bold text-gray-900">{statistics.total}</p>
+          <p className="text-3xl font-bold text-white tabular-nums">{statistics.total}</p>
         </div>
 
-        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+        <div className="bg-slate-800/50 rounded-lg p-5 border border-slate-700/50">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              <Clock className="text-orange-600" size={20} />
+            <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
+              <Clock className="text-orange-400" size={20} />
             </div>
-            <span className="text-sm font-medium text-gray-600">Pending</span>
+            <span className="text-sm font-medium text-slate-400 font-mono uppercase">Pending</span>
           </div>
-          <p className="text-3xl font-bold text-gray-900">{statistics.pending}</p>
+          <p className="text-3xl font-bold text-white tabular-nums">{statistics.pending}</p>
         </div>
 
-        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+        <div className="bg-slate-800/50 rounded-lg p-5 border border-slate-700/50">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <CheckCircle className="text-green-600" size={20} />
+            <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+              <CheckCircle className="text-green-400" size={20} />
             </div>
-            <span className="text-sm font-medium text-gray-600">Completed</span>
+            <span className="text-sm font-medium text-slate-400 font-mono uppercase">Done</span>
           </div>
-          <p className="text-3xl font-bold text-gray-900">{statistics.completed}</p>
+          <p className="text-3xl font-bold text-white tabular-nums">{statistics.completed}</p>
         </div>
 
-        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+        <div className="bg-slate-800/50 rounded-lg p-5 border border-slate-700/50">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <AlertCircle className="text-purple-600" size={20} />
+            <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+              <Activity className="text-purple-400" size={20} />
             </div>
-            <span className="text-sm font-medium text-gray-600">Completion</span>
+            <span className="text-sm font-medium text-slate-400 font-mono uppercase">Rate</span>
           </div>
-          <p className="text-3xl font-bold text-gray-900">{statistics.percentage}%</p>
+          <p className="text-3xl font-bold text-white tabular-nums">{statistics.percentage}%</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-white flex items-center gap-2 font-mono">
               <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-              Pending Tasks
-              <span className="text-sm font-normal text-gray-500">({pendingTasks.length})</span>
+              PENDING
+              <span className="text-sm font-normal text-slate-400">({pendingTasks.length})</span>
             </h3>
-            <button className="text-gray-400 hover:text-gray-600">
-              <Filter size={18} />
-            </button>
           </div>
           <div className="space-y-3">
             {pendingTasks.length === 0 ? (
-              <div className="bg-gray-50 rounded-xl p-8 text-center text-gray-500 border border-gray-100">
-                <Clock className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p>No pending tasks</p>
+              <div className="bg-slate-800/50 rounded-lg p-8 text-center text-slate-500 border border-slate-700/50">
+                <Clock className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                <p className="font-mono text-sm">NO PENDING TASKS</p>
               </div>
             ) : (
-              pendingTasks.map(task => {
-                const priorityStyle = getPriorityColor(task.priority);
-                return (
-                  <div
-                    key={task.id}
-                    className="bg-white rounded-xl p-5 border border-gray-200 hover:shadow-md transition-all"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 mb-2">{task.title}</h4>
-                        <span className={`inline-block px-3 py-1 text-xs font-medium rounded-lg ${priorityStyle.bg} ${priorityStyle.text} ${priorityStyle.border} border`}>
-                          {task.priority.toUpperCase()} PRIORITY
-                        </span>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => toggleTaskStatus(task)}
-                          className="text-green-600 hover:bg-green-50 p-2 rounded-lg transition-colors"
-                          title="Mark as completed"
-                        >
-                          <CheckCircle size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleEdit(task)}
-                          className="text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition-colors"
-                          title="Edit task"
-                        >
-                          <Edit2 size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(task.id)}
-                          className="text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors"
-                          title="Delete task"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 text-sm mb-3">{task.description}</p>
-                    <div className="flex justify-between items-center text-sm pt-3 border-t border-gray-100">
-                      <span className="text-gray-700 font-medium">
-                        {getEmployeeName(task.assigned_to)}
+              pendingTasks.map(task => (
+                <div
+                  key={task.id}
+                  className="bg-slate-800/50 rounded-lg p-5 border border-slate-700/50 hover:border-cyan-500/50 transition-all"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-white mb-2 font-mono">{task.title}</h4>
+                      <span className={`inline-block px-3 py-1 text-xs font-medium rounded-lg border font-mono ${getPriorityColor(task.priority)}`}>
+                        {task.priority.toUpperCase()}
                       </span>
-                      {task.due_date && (
-                        <span className="text-gray-500 flex items-center gap-1">
-                          <Calendar size={14} />
-                          {new Date(task.due_date).toLocaleDateString()}
-                        </span>
-                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => toggleTaskStatus(task)}
+                        className="text-green-400 hover:bg-green-500/20 p-2 rounded-lg transition-colors"
+                        title="Mark as completed"
+                      >
+                        <CheckCircle size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleEdit(task)}
+                        className="text-blue-400 hover:bg-blue-500/20 p-2 rounded-lg transition-colors"
+                        title="Edit task"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(task.id)}
+                        className="text-red-400 hover:bg-red-500/20 p-2 rounded-lg transition-colors"
+                        title="Delete task"
+                      >
+                        <Trash2 size={18} />
+                      </button>
                     </div>
                   </div>
-                );
-              })
+                  <p className="text-slate-400 text-sm mb-3">{task.description}</p>
+                  <div className="flex justify-between items-center text-sm pt-3 border-t border-slate-700/50">
+                    <span className="text-slate-300 font-mono">
+                      {getEmployeeName(task.assigned_to)}
+                    </span>
+                    {task.due_date && (
+                      <span className="text-slate-500 flex items-center gap-1 font-mono text-xs">
+                        <Calendar size={14} />
+                        {new Date(task.due_date).toLocaleDateString()}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
             )}
           </div>
         </div>
 
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-white flex items-center gap-2 font-mono">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              Completed Tasks
-              <span className="text-sm font-normal text-gray-500">({completedTasks.length})</span>
+              COMPLETED
+              <span className="text-sm font-normal text-slate-400">({completedTasks.length})</span>
             </h3>
-            <button className="text-gray-400 hover:text-gray-600">
-              <Filter size={18} />
-            </button>
           </div>
           <div className="space-y-3">
             {completedTasks.length === 0 ? (
-              <div className="bg-gray-50 rounded-xl p-8 text-center text-gray-500 border border-gray-100">
-                <CheckCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                <p>No completed tasks</p>
+              <div className="bg-slate-800/50 rounded-lg p-8 text-center text-slate-500 border border-slate-700/50">
+                <CheckCircle className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                <p className="font-mono text-sm">NO COMPLETED TASKS</p>
               </div>
             ) : (
-              completedTasks.map(task => {
-                const priorityStyle = getPriorityColor(task.priority);
-                return (
-                  <div
-                    key={task.id}
-                    className="bg-white rounded-xl p-5 border border-gray-200 hover:shadow-md transition-all opacity-75"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 mb-2">{task.title}</h4>
-                        <span className={`inline-block px-3 py-1 text-xs font-medium rounded-lg ${priorityStyle.bg} ${priorityStyle.text} ${priorityStyle.border} border`}>
-                          {task.priority.toUpperCase()} PRIORITY
-                        </span>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => toggleTaskStatus(task)}
-                          className="text-orange-600 hover:bg-orange-50 p-2 rounded-lg transition-colors"
-                          title="Mark as pending"
-                        >
-                          <Clock size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleEdit(task)}
-                          className="text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition-colors"
-                          title="Edit task"
-                        >
-                          <Edit2 size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(task.id)}
-                          className="text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors"
-                          title="Delete task"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 text-sm mb-3">{task.description}</p>
-                    <div className="flex justify-between items-center text-sm pt-3 border-t border-gray-100">
-                      <span className="text-gray-700 font-medium">
-                        {getEmployeeName(task.assigned_to)}
+              completedTasks.map(task => (
+                <div
+                  key={task.id}
+                  className="bg-slate-800/50 rounded-lg p-5 border border-slate-700/50 hover:border-green-500/50 transition-all opacity-75"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-white mb-2 font-mono">{task.title}</h4>
+                      <span className={`inline-block px-3 py-1 text-xs font-medium rounded-lg border font-mono ${getPriorityColor(task.priority)}`}>
+                        {task.priority.toUpperCase()}
                       </span>
-                      {task.completed_at && (
-                        <span className="text-green-600 text-xs font-medium">
-                          ✓ {new Date(task.completed_at).toLocaleDateString()}
-                        </span>
-                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => toggleTaskStatus(task)}
+                        className="text-orange-400 hover:bg-orange-500/20 p-2 rounded-lg transition-colors"
+                        title="Mark as pending"
+                      >
+                        <Clock size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleEdit(task)}
+                        className="text-blue-400 hover:bg-blue-500/20 p-2 rounded-lg transition-colors"
+                        title="Edit task"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(task.id)}
+                        className="text-red-400 hover:bg-red-500/20 p-2 rounded-lg transition-colors"
+                        title="Delete task"
+                      >
+                        <Trash2 size={18} />
+                      </button>
                     </div>
                   </div>
-                );
-              })
+                  <p className="text-slate-400 text-sm mb-3">{task.description}</p>
+                  <div className="flex justify-between items-center text-sm pt-3 border-t border-slate-700/50">
+                    <span className="text-slate-300 font-mono">
+                      {getEmployeeName(task.assigned_to)}
+                    </span>
+                    {task.completed_at && (
+                      <span className="text-green-400 text-xs font-medium font-mono">
+                        ✓ {new Date(task.completed_at).toLocaleDateString()}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
             )}
           </div>
         </div>
