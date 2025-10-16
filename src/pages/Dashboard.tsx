@@ -1,10 +1,19 @@
-import { Users, Building2, DollarSign, Calendar, Check, Clock, X, TrendingUp, Filter } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Users, Building2, DollarSign, Calendar, Check, Clock, X, TrendingUp, TrendingDown, Activity, AlertCircle, ArrowUp, ArrowDown } from 'lucide-react';
 import { useEmployee } from '../contexts/EmployeeContext';
 import LeaveAnalytics from '../components/LeaveAnalytics';
 import TaskManagement from '../components/TaskManagement';
 
 const Dashboard = () => {
   const { employees, departments, leaves } = useEmployee();
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const totalSalary = employees.reduce((sum, emp) => sum + emp.salary, 0);
   const monthlyPay = totalSalary;
@@ -16,151 +25,308 @@ const Dashboard = () => {
     rejected: leaves.filter(l => l.status === 'rejected').length
   };
 
-  const statsCards = [
-    { title: 'Total Employees', value: employees.length, icon: Users, color: 'from-blue-400 to-cyan-300', change: '+2.5%' },
-    { title: 'Total Departments', value: departments.length, icon: Building2, color: 'from-indigo-400 to-blue-300', change: '+1.2%' },
-    { title: 'Monthly Pay', value: `$${monthlyPay.toLocaleString()}`, icon: DollarSign, color: 'from-cyan-400 to-blue-300', change: '+3.1%' }
-  ];
+  const recentEmployees = employees.slice(-5);
 
-  const leaveCards = [
-    { title: 'Leave Applied', value: leaveStats.applied, icon: Calendar, color: 'from-blue-400 to-cyan-300' },
-    { title: 'Approved', value: leaveStats.approved, icon: Check, color: 'from-green-400 to-emerald-300' },
-    { title: 'Pending', value: leaveStats.pending, icon: Clock, color: 'from-yellow-300 to-amber-200' },
-    { title: 'Rejected', value: leaveStats.rejected, icon: X, color: 'from-red-400 to-pink-300' }
-  ];
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+  };
 
-  const recentEmployees = employees.slice(-3);
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
 
   return (
-    <div className="relative min-h-screen bg-white p-8 text-gray-900 overflow-x-hidden">
-      {/* Glassmorphism Overlay */}
-      <div className="absolute inset-0 backdrop-blur-xl bg-white/30 pointer-events-none -z-10"></div>
-
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold drop-shadow-sm">Dashboard</h1>
-        <p className="text-gray-700 text-sm mt-2">Welcome back! Here’s an overview of your company’s performance.</p>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {statsCards.map(card => (
-          <div
-            key={card.title}
-            className={`relative p-6 rounded-2xl shadow-lg bg-gradient-to-r ${card.color} text-white 
-              hover:scale-[1.03] transition-transform duration-300`}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm opacity-90">{card.title}</p>
-                <p className="text-3xl font-bold mt-2">{card.value}</p>
-              </div>
-              <div className="p-3 rounded-full bg-white/30 backdrop-blur-md">
-                <card.icon className="h-6 w-6 text-white" />
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+      <div className="fixed top-0 left-0 right-0 bg-slate-900/95 backdrop-blur-sm border-b border-cyan-500/20 z-10 px-6 py-3">
+        <div className="flex items-center justify-between max-w-screen-2xl mx-auto">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <Activity className="h-5 w-5 text-cyan-400 animate-pulse" />
+              <span className="text-cyan-400 font-mono text-sm font-semibold">LIVE</span>
             </div>
-            <span className="absolute bottom-4 right-6 text-sm opacity-80">{card.change} from last month</span>
+            <div className="h-4 w-px bg-slate-700"></div>
+            <div className="text-sm font-mono text-slate-400">{formatDate(currentTime)}</div>
           </div>
-        ))}
+          <div className="flex items-center gap-6">
+            <div className="text-2xl font-mono font-bold text-cyan-400 tabular-nums">
+              {formatTime(currentTime)}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Leave Details + Recent Employees */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
-        {/* Leave Details */}
-        <div className="rounded-2xl bg-white/50 backdrop-blur-lg shadow-lg border border-gray-200 p-6 hover:bg-white/70 transition-all">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Leave Details</h2>
-            <Calendar className="h-5 w-5 text-gray-700" />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {leaveCards.map(card => (
-              <div
-                key={card.title}
-                className={`flex items-center p-4 rounded-xl shadow-md bg-gradient-to-r ${card.color} text-white hover:scale-[1.02] transition-transform`}
-              >
-                <div className="p-2 rounded-full bg-white/30 mr-3">
-                  <card.icon className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm opacity-90">{card.title}</p>
-                  <p className="text-xl font-bold">{card.value}</p>
-                </div>
+      <div className="pt-20 px-6 pb-6 max-w-screen-2xl mx-auto">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-white mb-1">EMPLOYEE MANAGEMENT SYSTEM</h1>
+          <p className="text-slate-400 text-sm font-mono">Real-time organizational data and analytics</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
+          <div className="bg-slate-900/80 border border-slate-700/50 rounded-lg p-4 hover:border-cyan-500/50 transition-all">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-cyan-400" />
+                <span className="text-xs text-slate-400 font-mono uppercase tracking-wide">Total Employees</span>
               </div>
-            ))}
+              <ArrowUp className="h-3 w-3 text-green-400" />
+            </div>
+            <div className="flex items-end justify-between">
+              <div className="text-3xl font-bold text-white tabular-nums">{employees.length}</div>
+              <div className="text-xs text-green-400 font-mono">+2.5%</div>
+            </div>
+            <div className="mt-2 h-1 bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500" style={{ width: '75%' }}></div>
+            </div>
+          </div>
+
+          <div className="bg-slate-900/80 border border-slate-700/50 rounded-lg p-4 hover:border-blue-500/50 transition-all">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-4 w-4 text-blue-400" />
+                <span className="text-xs text-slate-400 font-mono uppercase tracking-wide">Departments</span>
+              </div>
+              <ArrowUp className="h-3 w-3 text-green-400" />
+            </div>
+            <div className="flex items-end justify-between">
+              <div className="text-3xl font-bold text-white tabular-nums">{departments.length}</div>
+              <div className="text-xs text-green-400 font-mono">+1.2%</div>
+            </div>
+            <div className="mt-2 h-1 bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-500" style={{ width: '60%' }}></div>
+            </div>
+          </div>
+
+          <div className="bg-slate-900/80 border border-slate-700/50 rounded-lg p-4 hover:border-green-500/50 transition-all">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-green-400" />
+                <span className="text-xs text-slate-400 font-mono uppercase tracking-wide">Monthly Payroll</span>
+              </div>
+              <ArrowUp className="h-3 w-3 text-green-400" />
+            </div>
+            <div className="flex items-end justify-between">
+              <div className="text-3xl font-bold text-white tabular-nums">${(monthlyPay / 1000).toFixed(1)}K</div>
+              <div className="text-xs text-green-400 font-mono">+3.1%</div>
+            </div>
+            <div className="mt-2 h-1 bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-green-500 to-emerald-500" style={{ width: '85%' }}></div>
+            </div>
+          </div>
+
+          <div className="bg-slate-900/80 border border-slate-700/50 rounded-lg p-4 hover:border-yellow-500/50 transition-all">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-yellow-400" />
+                <span className="text-xs text-slate-400 font-mono uppercase tracking-wide">Leave Requests</span>
+              </div>
+              <AlertCircle className="h-3 w-3 text-yellow-400" />
+            </div>
+            <div className="flex items-end justify-between">
+              <div className="text-3xl font-bold text-white tabular-nums">{leaveStats.pending}</div>
+              <div className="text-xs text-slate-400 font-mono">Pending</div>
+            </div>
+            <div className="mt-2 h-1 bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-yellow-500 to-orange-500" style={{ width: '45%' }}></div>
+            </div>
           </div>
         </div>
 
-        {/* Recent Employees */}
-        <div className="rounded-2xl bg-white/50 backdrop-blur-lg shadow-lg border border-gray-200 p-6 hover:bg-white/70 transition-all">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Employees</h2>
-            <Users className="h-5 w-5 text-gray-700" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+          <div className="lg:col-span-2 bg-slate-900/80 border border-slate-700/50 rounded-lg overflow-hidden">
+            <div className="bg-slate-800/50 px-4 py-3 border-b border-slate-700/50">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-mono uppercase tracking-wide text-slate-300 font-semibold">Employee Data</h2>
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-slate-400 font-mono">STREAMING</span>
+                </div>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-800/30">
+                  <tr className="border-b border-slate-700/50">
+                    <th className="text-left px-4 py-3 text-xs font-mono uppercase tracking-wider text-slate-400">Name</th>
+                    <th className="text-left px-4 py-3 text-xs font-mono uppercase tracking-wider text-slate-400">Position</th>
+                    <th className="text-left px-4 py-3 text-xs font-mono uppercase tracking-wider text-slate-400">Department</th>
+                    <th className="text-right px-4 py-3 text-xs font-mono uppercase tracking-wider text-slate-400">Salary</th>
+                    <th className="text-center px-4 py-3 text-xs font-mono uppercase tracking-wider text-slate-400">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/50">
+                  {recentEmployees.map((emp, index) => (
+                    <tr key={emp.id} className="hover:bg-slate-800/30 transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-xs font-bold">
+                            {emp.name.split(' ').map(n => n[0]).join('')}
+                          </div>
+                          <span className="font-medium text-white">{emp.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-slate-300">{emp.position}</td>
+                      <td className="px-4 py-3 text-slate-300">{emp.department}</td>
+                      <td className="px-4 py-3 text-right font-mono text-green-400">${emp.salary.toLocaleString()}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center">
+                          <span className="px-2 py-1 text-xs font-mono bg-green-500/20 text-green-400 rounded border border-green-500/30">
+                            ACTIVE
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div className="space-y-4">
-            {recentEmployees.map(emp => (
-              <div
-                key={emp.id}
-                className="flex items-center justify-between p-4 rounded-xl bg-white/40 hover:bg-white/60 backdrop-blur-md transition-all shadow-sm"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-cyan-300 font-semibold text-white">
-                    {emp.name.split(' ').map(n => n[0]).join('')}
+
+          <div className="bg-slate-900/80 border border-slate-700/50 rounded-lg overflow-hidden">
+            <div className="bg-slate-800/50 px-4 py-3 border-b border-slate-700/50">
+              <h2 className="text-sm font-mono uppercase tracking-wide text-slate-300 font-semibold">Leave Status</h2>
+            </div>
+            <div className="p-4 space-y-3">
+              <div className="bg-slate-800/50 border border-green-500/30 rounded-lg p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-green-400" />
+                    <span className="text-xs text-slate-400 font-mono uppercase">Approved</span>
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-900">{emp.name}</p>
-                    <p className="text-sm text-gray-600">{emp.position}</p>
+                  <TrendingUp className="h-3 w-3 text-green-400" />
+                </div>
+                <div className="text-2xl font-bold text-white tabular-nums">{leaveStats.approved}</div>
+                <div className="mt-2 text-xs text-green-400 font-mono">+{Math.round((leaveStats.approved / leaveStats.applied) * 100)}%</div>
+              </div>
+
+              <div className="bg-slate-800/50 border border-yellow-500/30 rounded-lg p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-yellow-400" />
+                    <span className="text-xs text-slate-400 font-mono uppercase">Pending</span>
+                  </div>
+                  <Activity className="h-3 w-3 text-yellow-400" />
+                </div>
+                <div className="text-2xl font-bold text-white tabular-nums">{leaveStats.pending}</div>
+                <div className="mt-2 text-xs text-slate-400 font-mono">Awaiting review</div>
+              </div>
+
+              <div className="bg-slate-800/50 border border-red-500/30 rounded-lg p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <X className="h-4 w-4 text-red-400" />
+                    <span className="text-xs text-slate-400 font-mono uppercase">Rejected</span>
+                  </div>
+                  <TrendingDown className="h-3 w-3 text-red-400" />
+                </div>
+                <div className="text-2xl font-bold text-white tabular-nums">{leaveStats.rejected}</div>
+                <div className="mt-2 text-xs text-red-400 font-mono">-{Math.round((leaveStats.rejected / leaveStats.applied) * 100)}%</div>
+              </div>
+
+              <div className="bg-slate-800/50 border border-blue-500/30 rounded-lg p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-blue-400" />
+                    <span className="text-xs text-slate-400 font-mono uppercase">Total</span>
                   </div>
                 </div>
-                <div className="text-right text-sm text-gray-700">
-                  <p>{emp.department}</p>
-                  <p className="text-indigo-500">Joined {new Date(emp.joinDate).toLocaleDateString()}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Task Management */}
-      <div className="rounded-2xl bg-white/50 backdrop-blur-lg shadow-lg border border-gray-200 p-6 mt-10 hover:bg-white/70 transition-all">
-        <TaskManagement />
-      </div>
-
-      {/* Leave Analytics */}
-      <div className="rounded-2xl bg-white/50 backdrop-blur-lg shadow-lg border border-gray-200 p-6 mt-10 hover:bg-white/70 transition-all">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center">
-            <TrendingUp className="h-6 w-6 text-gray-700 mr-3" />
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">Leave Analytics</h2>
-              <p className="text-sm text-gray-600">Track individual employee leave patterns</p>
-            </div>
-          </div>
-          <Filter className="h-5 w-5 text-gray-500" />
-        </div>
-        <LeaveAnalytics />
-      </div>
-
-      {/* Department Overview */}
-      <div className="rounded-2xl bg-white/50 backdrop-blur-lg shadow-lg border border-gray-200 p-6 mt-10 hover:bg-white/70 transition-all">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Department Overview</h2>
-          <Building2 className="h-5 w-5 text-gray-700" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {departments.map(dept => (
-            <div
-              key={dept.id}
-              className="p-4 border border-gray-200 rounded-xl bg-white/40 backdrop-blur-md hover:bg-white/60 transition-all shadow-sm"
-            >
-              <h3 className="font-medium text-gray-900">{dept.name}</h3>
-              <p className="text-sm text-gray-600 mt-1">{dept.description}</p>
-              <div className="mt-3 flex items-center justify-between text-sm text-gray-700">
-                <span>Manager: {dept.manager}</span>
-                <span className="font-medium text-indigo-500">{dept.employeeCount} employees</span>
+                <div className="text-2xl font-bold text-white tabular-nums">{leaveStats.applied}</div>
+                <div className="mt-2 text-xs text-slate-400 font-mono">All requests</div>
               </div>
             </div>
-          ))}
+          </div>
+        </div>
+
+        <div className="bg-slate-900/80 border border-slate-700/50 rounded-lg overflow-hidden mb-4">
+          <div className="bg-slate-800/50 px-4 py-3 border-b border-slate-700/50">
+            <h2 className="text-sm font-mono uppercase tracking-wide text-slate-300 font-semibold">Department Overview</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-800/30">
+                <tr className="border-b border-slate-700/50">
+                  <th className="text-left px-4 py-3 text-xs font-mono uppercase tracking-wider text-slate-400">Department</th>
+                  <th className="text-left px-4 py-3 text-xs font-mono uppercase tracking-wider text-slate-400">Manager</th>
+                  <th className="text-center px-4 py-3 text-xs font-mono uppercase tracking-wider text-slate-400">Employees</th>
+                  <th className="text-right px-4 py-3 text-xs font-mono uppercase tracking-wider text-slate-400">Utilization</th>
+                  <th className="text-center px-4 py-3 text-xs font-mono uppercase tracking-wider text-slate-400">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/50">
+                {departments.map((dept) => {
+                  const utilization = Math.floor(Math.random() * 30) + 70;
+                  return (
+                    <tr key={dept.id} className="hover:bg-slate-800/30 transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4 text-blue-400" />
+                          <span className="font-medium text-white">{dept.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-slate-300">{dept.manager}</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="px-2 py-1 text-xs font-mono bg-cyan-500/20 text-cyan-400 rounded">
+                          {dept.employeeCount}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full ${utilization > 85 ? 'bg-green-500' : 'bg-yellow-500'}`}
+                              style={{ width: `${utilization}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-xs font-mono text-slate-400 w-10 text-right">{utilization}%</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center">
+                          <span className={`px-2 py-1 text-xs font-mono rounded border ${
+                            utilization > 85
+                              ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                              : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                          }`}>
+                            {utilization > 85 ? 'OPTIMAL' : 'MODERATE'}
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="bg-slate-900/80 border border-slate-700/50 rounded-lg overflow-hidden mb-4">
+          <div className="bg-slate-800/50 px-4 py-3 border-b border-slate-700/50">
+            <h2 className="text-sm font-mono uppercase tracking-wide text-slate-300 font-semibold">Task Management System</h2>
+          </div>
+          <div className="p-6">
+            <TaskManagement />
+          </div>
+        </div>
+
+        <div className="bg-slate-900/80 border border-slate-700/50 rounded-lg overflow-hidden">
+          <div className="bg-slate-800/50 px-4 py-3 border-b border-slate-700/50">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-cyan-400" />
+              <h2 className="text-sm font-mono uppercase tracking-wide text-slate-300 font-semibold">Leave Analytics</h2>
+            </div>
+          </div>
+          <div className="p-6">
+            <LeaveAnalytics />
+          </div>
         </div>
       </div>
     </div>
