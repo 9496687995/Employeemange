@@ -24,8 +24,8 @@ const Dashboard = () => {
 
         {/* Header */}
         <div className="mb-4">
-          <h1 className="text-2xl font-bold text-white font-mono uppercase tracking-wide">TASK MANAGEMENT SYSTEM</h1>
-          <p className="text-slate-400 text-sm font-mono mt-1">Real-time task tracking and assignment</p>
+          <h1 className="text-2xl font-bold text-white font-mono uppercase tracking-wide">EMPLOYEE MANAGEMENT SYSTEM</h1>
+          <p className="text-slate-400 text-sm font-mono mt-1">Real-time organizational data and analytics</p>
         </div>
 
         {/* Stats Cards Grid */}
