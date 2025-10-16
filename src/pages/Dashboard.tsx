@@ -24,8 +24,8 @@ const Dashboard = () => {
 
         {/* Header */}
         <div className="mb-4">
-          <h1 className="text-2xl font-bold text-white font-mono uppercase tracking-wide">EMPLOYEE MANAGEMENT SYSTEM</h1>
-          <p className="text-slate-400 text-sm font-mono mt-1">Real-time organizational data and analytics</p>
+          <h1 className="text-2xl font-bold text-white font-mono uppercase tracking-wide">TASK MANAGEMENT SYSTEM</h1>
+          <p className="text-slate-400 text-sm font-mono mt-1">Real-time task tracking and assignment</p>
         </div>
 
         {/* Stats Cards Grid */}
@@ -96,6 +96,16 @@ const Dashboard = () => {
             <div className="mt-3 h-1 bg-slate-800 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-yellow-500 to-orange-500" style={{ width: '45%' }}></div>
             </div>
+          </div>
+        </div>
+
+        {/* Task Management */}
+        <div className="bg-slate-900/80 border border-slate-700/50 rounded-lg overflow-hidden">
+          <div className="bg-slate-800/50 px-4 py-3 border-b border-slate-700/50">
+            <h2 className="text-sm font-mono uppercase tracking-wide text-slate-300 font-semibold">Task Management System</h2>
+          </div>
+          <div className="p-6">
+            <TaskManagement />
           </div>
         </div>
 
@@ -268,16 +278,6 @@ const Dashboard = () => {
                 })}
               </tbody>
             </table>
-          </div>
-        </div>
-
-        {/* Task Management */}
-        <div className="bg-slate-900/80 border border-slate-700/50 rounded-lg overflow-hidden">
-          <div className="bg-slate-800/50 px-4 py-3 border-b border-slate-700/50">
-            <h2 className="text-sm font-mono uppercase tracking-wide text-slate-300 font-semibold">Task Management System</h2>
-          </div>
-          <div className="p-6">
-            <TaskManagement />
           </div>
         </div>
 
